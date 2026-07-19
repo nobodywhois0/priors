@@ -1,13 +1,24 @@
 import type { Project } from "../data/projects";
 
+export type BoardKind = "confirmed" | "weak" | "pending" | "rejected" | "moredata";
+
 export interface BoardRow {
   hipotesis: string;
   estado: string;
   nivel: string;
   evidencia: string;
   proximoPaso: string;
-  kind: "confirmed" | "weak" | "pending" | "rejected" | "moredata";
+  kind: BoardKind;
+  shortLabel: string;
 }
+
+const SHORT_LABELS: Record<BoardKind, string> = {
+  confirmed: "Confirmada",
+  weak: "Evidencia débil",
+  pending: "Pendiente",
+  rejected: "Rechazada",
+  moredata: "Requiere más datos",
+};
 
 export interface BoardResult {
   project: Project;
@@ -54,13 +65,15 @@ function parseBoardTable(markdown: string): BoardRow[] {
   // tableLines[0] = header, tableLines[1] = separator, rest = data rows
   return tableLines.slice(2).map((line) => {
     const [hipotesis, estado, nivel, evidencia, proximoPaso] = parseRow(line);
+    const kind = classify(estado ?? "");
     return {
       hipotesis: hipotesis ?? "",
       estado: estado ?? "",
       nivel: nivel ?? "",
       evidencia: evidencia ?? "",
       proximoPaso: proximoPaso ?? "",
-      kind: classify(estado ?? ""),
+      kind,
+      shortLabel: SHORT_LABELS[kind],
     };
   });
 }

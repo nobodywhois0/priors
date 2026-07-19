@@ -75,7 +75,10 @@ const boards = await fetchAllBoards(projects);
                       <td>{b.project.name}</td>
                       <td>{row.hipotesis}</td>
                       <td>
-                        <span class={`pill pill--${row.kind}`}>{row.estado}</span>
+                        <span class={`pill pill--${row.kind}`}>{row.shortLabel}</span>
+                        {row.estado !== row.shortLabel && (
+                          <p class="estado-detail">{row.estado}</p>
+                        )}
                       </td>
                       <td>{row.nivel}</td>
                       <td>{row.evidencia}</td>
