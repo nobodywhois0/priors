@@ -1,0 +1,20 @@
+---
+---
+<button class="theme-toggle" aria-label="Cambiar entre modo claro y oscuro / Toggle light and dark mode">☾</button>
+
+<script is:inline>
+  (function () {
+    var btn = document.currentScript.previousElementSibling;
+    var saved = localStorage.getItem("theme");
+    var effective = saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    btn.textContent = effective === "dark" ? "☀" : "☾";
+    btn.addEventListener("click", function () {
+      var cur = document.documentElement.getAttribute("data-theme") ||
+        (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+      var next = cur === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+      btn.textContent = next === "dark" ? "☀" : "☾";
+    });
+  })();
+</script>

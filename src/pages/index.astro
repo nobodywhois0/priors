@@ -1,0 +1,98 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { projects } from "../data/projects";
+import { fetchAllBoards } from "../lib/fetchBoard";
+
+const boards = await fetchAllBoards(projects);
+---
+
+<BaseLayout
+  title="Priors"
+  description="Investigación cuantitativa abierta y pre-registrada — metodología documentada antes de ver resultados, hallazgos positivos y negativos publicados por igual."
+>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="doc-eyebrow"><span>Investigación abierta</span> · <span>Pre-registrada</span></div>
+      <h1 class="doc-title">Priors</h1>
+      <p class="doc-subtitle">
+        Un lugar para investigación cuantitativa que se compromete con su
+        metodología antes de ver los resultados. Cada proyecto pre-registra
+        su hipótesis, define su benchmark y su criterio de éxito por
+        adelantado, y publica lo que encuentre — funcione o no la hipótesis.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section id="proyectos">
+      <div class="eyebrow">Proyectos</div>
+      <h2>Investigaciones en curso</h2>
+      <div class="card-grid">
+        {
+          projects.map((p) => (
+            <a class="card" href={p.siteUrl}>
+              <span class="card-tag">Investigación activa</span>
+              <h3>{p.name}</h3>
+              <p>{p.description}</p>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section id="estado">
+      <div class="eyebrow">Estado agregado</div>
+      <h2>En qué nivel de evidencia está cada hipótesis</h2>
+      <p>
+        Jalado en cada build directamente del <code>board.md</code> de cada
+        proyecto — nunca se transcribe a mano, así que nunca se desactualiza
+        respecto al repositorio original.
+      </p>
+
+      {
+        boards.map((b) =>
+          b.error ? (
+            <p>
+              <em>
+                No se pudo leer el tablero de {b.project.name}: {b.error}
+              </em>
+            </p>
+          ) : (
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Proyecto</th>
+                    <th>Hipótesis</th>
+                    <th>Estado</th>
+                    <th>Nivel</th>
+                    <th>Evidencia clave</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {b.rows.map((row) => (
+                    <tr>
+                      <td>{b.project.name}</td>
+                      <td>{row.hipotesis}</td>
+                      <td>
+                        <span class={`pill pill--${row.kind}`}>{row.estado}</span>
+                      </td>
+                      <td>{row.nivel}</td>
+                      <td>{row.evidencia}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )
+      }
+    </section>
+  </main>
+
+  <footer>
+    Priors — <a href="https://github.com/nobodywhois0/priors">código fuente</a>.
+    Cada proyecto vive en su propio repositorio; este sitio solo los indexa
+    y agrega su estado.
+  </footer>
+</BaseLayout>
